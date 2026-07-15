@@ -195,10 +195,10 @@
   }
 
   /* ===================== parsing ===================== */
-  function mkFromGrid(aStr,bStr){ // strings of equal length 3..5
+  function mkFromGrid(aStr,bStr){ // strings of equal length 3..5; anchor at SW corner (zero-pad finer digits)
     const d=aStr.length, step=Math.pow(10,5-d);
-    const E=LEAD_E*100000+parseInt(aStr,10)*step+step/2;
-    const N=LEAD_N*100000+parseInt(bStr,10)*step+step/2;
+    const E=LEAD_E*100000+parseInt(aStr,10)*step;
+    const N=LEAD_N*100000+parseInt(bStr,10)*step;
     const {lat,lon}=rsoToWgs(E,N); return {lat,lon,d};
   }
   // one WGS coordinate value from a string -> {val, hemi} | null
