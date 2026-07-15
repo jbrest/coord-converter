@@ -171,7 +171,9 @@
   /* ===================== formatting ===================== */
   function gridHalvesEN(E,N,d){
     d=d||4; const step=Math.pow(10,5-d), max=Math.pow(10,d)-1;
-    const e=Math.floor((E-600000)/step), n=Math.floor((N-100000)/step);
+    // round to mm first so a square centre sitting on a grid line doesn't floor to the wrong digit
+    const Er=Math.round(E*1000)/1000, Nr=Math.round(N*1000)/1000;
+    const e=Math.floor((Er-600000)/step), n=Math.floor((Nr-100000)/step);
     if(e<0||e>max||n<0||n>max) return ["————","————"];
     return [String(e).padStart(d,"0"), String(n).padStart(d,"0")];
   }
@@ -185,7 +187,8 @@
   // [cellA, cellB] strings for a point in a system
   function cellsFor(pt, key){
     const s=SYSTEMS[key];
-    if(s.kind==="grid"){ const {E,N}=wgsToRso(pt.lat,pt.lon); return gridHalvesEN(E,N,pt.d); }
+    // Singapore MGR output: always at least 8-fig (4x4), but preserve finer 10-fig (5x5) if entered that way
+    if(s.kind==="grid"){ const {E,N}=wgsToRso(pt.lat,pt.lon); return gridHalvesEN(E,N,Math.max(4, pt.d||4)); }
     const la = s.fmt==="dec"?decWgs(pt.lat,true):dmsWgs(pt.lat,true);
     const lo = s.fmt==="dec"?decWgs(pt.lon,false):dmsWgs(pt.lon,false);
     return s.order==="latlon"?[la,lo]:[lo,la];
