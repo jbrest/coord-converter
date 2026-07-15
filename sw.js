@@ -1,6 +1,6 @@
 /* Coordinate Converter — cache-first service worker.
    Bump CACHE when any cached file changes to force an update. */
-const CACHE = "coord-conv-v5";
+const CACHE = "coord-conv-v6";
 const ASSETS = [
   "./",
   "./index.html",
