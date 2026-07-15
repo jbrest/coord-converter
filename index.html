@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f172a">
+<title>Coordinate Converter</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<style>
+  :root{
+    --bg:#0f172a; --panel:#1e293b; --panel2:#243244; --line:#334155;
+    --text:#f1f5f9; --muted:#94a3b8; --accent:#38bdf8; --accent-ink:#04283a;
+    --danger:#f87171; --ok:#34d399; --warn:#fbbf24; --g2:#a78bfa;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%}
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    font:500 15px/1.35 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    display:flex; flex-direction:column; overscroll-behavior:none;
+    padding-top:env(safe-area-inset-top); padding-bottom:env(safe-area-inset-bottom);
+  }
+  header{
+    padding:8px 12px; border-bottom:1px solid var(--line);
+    display:flex; align-items:center; gap:8px; flex:0 0 auto;
+  }
+  header .badge{width:26px;height:26px;border-radius:7px;background:var(--accent);display:grid;place-items:center;color:var(--accent-ink);font-weight:800;font-size:11px}
+  header h1{margin:0; font-size:15px; letter-spacing:.2px}
+  header .sub{color:var(--muted); font-size:11px; font-weight:500}
+
+  /* ---- panels ---- */
+  .panel{flex:1 1 0; min-height:0; display:flex; flex-direction:column; border-bottom:1px solid var(--line)}
+  .panel-head{
+    display:flex; align-items:center; gap:8px; padding:6px 10px; flex:0 0 auto;
+  }
+  .tag{width:8px;height:8px;border-radius:50%;flex:0 0 auto}
+  .tag.a{background:var(--accent)} .tag.b{background:var(--g2)}
+  select.sys{
+    flex:1 1 auto; min-width:0; appearance:none; -webkit-appearance:none;
+    background:var(--panel2); color:var(--text); border:1px solid var(--line);
+    border-radius:9px; padding:8px 30px 8px 10px; font-size:14px; font-weight:700;
+    background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);
+    background-position:calc(100% - 16px) 50%,calc(100% - 11px) 50%; background-size:5px 5px,5px 5px; background-repeat:no-repeat;
+  }
+  button.copy{
+    flex:0 0 auto; border:1px solid var(--line); background:var(--panel2); color:var(--accent);
+    font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.5px;
+    padding:8px 12px; border-radius:9px; cursor:pointer;
+  }
+  button.copy:active{background:var(--line)}
+  button.copy:disabled{opacity:.4}
+  .panel-body{flex:1 1 auto; overflow:auto; -webkit-overflow-scrolling:touch; padding:0 10px 8px}
+  .colhead,.row{
+    display:grid; grid-template-columns:22px minmax(84px,1fr) minmax(84px,1fr) minmax(64px,1.1fr);
+    gap:6px; align-items:center;
+  }
+  .colhead{
+    position:sticky; top:0; z-index:2; background:var(--bg);
+    padding:2px 2px 6px; color:var(--muted); font-size:10px; font-weight:800;
+    text-transform:uppercase; letter-spacing:.5px;
+  }
+  .colhead span{white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+  .rows{display:flex; flex-direction:column; gap:5px}
+  .row{
+    background:var(--panel); border:1px solid var(--line); border-radius:9px; padding:7px 8px;
+  }
+  .row .n{color:var(--muted); font-size:12px; font-weight:700; font-variant-numeric:tabular-nums}
+  .row .c{font-variant-numeric:tabular-nums; letter-spacing:.5px; font-size:15px; white-space:nowrap}
+  .row .nm{color:var(--muted); font-size:13px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+  .empty{color:var(--muted); font-size:13px; padding:14px 4px; text-align:center}
+  .disabled-note{color:var(--warn); font-size:12px; padding:14px 4px; text-align:center}
+
+  /* ---- input dock ---- */
+  .dock{flex:0 0 auto; background:var(--panel); padding:8px 10px 10px; border-top:2px solid var(--line)}
+  .dock-label{color:var(--muted); font-size:12px; margin:0 2px 6px}
+  .dock-label b{color:var(--accent)}
+  .dock-label code{background:var(--panel2); padding:1px 5px; border-radius:4px; color:var(--text); font-size:11px}
+  textarea#input{
+    width:100%; max-height:22vh; min-height:64px; resize:none; border-radius:10px;
+    border:1px solid var(--line); background:var(--panel2); color:var(--text);
+    padding:10px 12px; font:600 16px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace; letter-spacing:.5px; overflow-y:auto;
+  }
+  textarea#input::placeholder{color:var(--muted); font-weight:500; letter-spacing:normal}
+  #errors{margin:6px 2px 0; display:flex; flex-direction:column; gap:3px}
+  .err{color:var(--danger); font-size:12px; font-weight:600}
+  .dock-actions{display:flex; gap:8px; margin-top:8px}
+  a.btn,button.btn{
+    flex:1 1 0; min-height:48px; display:flex; align-items:center; justify-content:center; gap:8px;
+    border-radius:11px; border:1px solid var(--line); background:var(--panel2); color:var(--text);
+    font-size:15px; font-weight:800; cursor:pointer; text-decoration:none; padding:0 12px;
+  }
+  a.btn.primary{background:var(--ok); color:#04321f; border-color:var(--ok)}
+  a.btn.disabled{opacity:.4; pointer-events:none}
+  button.btn.ghost{flex:0 0 auto; color:var(--danger)}
+  .toast{
+    position:fixed; left:50%; bottom:calc(20px + env(safe-area-inset-bottom)); transform:translateX(-50%) translateY(20px);
+    background:var(--ok); color:#04321f; font-weight:800; padding:10px 18px; border-radius:999px; opacity:0;
+    transition:all .2s ease; pointer-events:none; z-index:100;
+  }
+  .toast.show{opacity:1; transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+  <header>
+    <div class="badge">SG</div>
+    <div><h1>Grid ⇄ Maps</h1><div class="sub">RSO / WGS-84 coordinate converter</div></div>
+  </header>
+
+  <!-- GRID 1 -->
+  <section class="panel">
+    <div class="panel-head">
+      <span class="tag a"></span>
+      <select class="sys" id="sys1"></select>
+      <button class="copy" id="copy1" disabled>Copy</button>
+    </div>
+    <div class="panel-body">
+      <div class="colhead" id="head1"></div>
+      <div class="rows" id="rows1"></div>
+    </div>
+  </section>
+
+  <!-- GRID 2 -->
+  <section class="panel">
+    <div class="panel-head">
+      <span class="tag b"></span>
+      <select class="sys" id="sys2"></select>
+      <button class="copy" id="copy2" disabled>Copy</button>
+    </div>
+    <div class="panel-body">
+      <div class="colhead" id="head2"></div>
+      <div class="rows" id="rows2"></div>
+    </div>
+  </section>
+
+  <!-- INPUT -->
+  <div class="dock">
+    <div class="dock-label">Input · <b id="inlabel">Singapore MGR</b> — one point per line: <code id="inhint">EEEE NNNN name</code></div>
+    <textarea id="input" inputmode="text" autocomplete="off" autocapitalize="off" spellcheck="false"
+      placeholder="3485 5349 OP Alpha&#10;3514 5189 OP Bravo"></textarea>
+    <div id="errors"></div>
+    <div class="dock-actions">
+      <a class="btn primary disabled" id="mapsbtn" target="_blank" rel="noopener">📍 Open in Google Maps</a>
+      <button class="btn ghost" id="clearbtn" title="Clear input">Clear</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">Copied</div>
+
+  <script src="proj4.js"></script>
+  <script>
+  "use strict";
+
+  /* ================= conversion core (validated EPSG:3168 RSO) ================= */
+  proj4.defs("EPSG:3168",
+    "+proj=omerc +no_uoff +lat_0=4 +lonc=102.25 +alpha=323.0257905 +gamma=323.130102361111 " +
+    "+k=0.99984 +x_0=804670.24 +y_0=0 +ellps=evrst69 +towgs84=-11,851,5,0,0,0,0 +units=m +no_defs");
+  const LEAD_E = 6, LEAD_N = 1;
+  function rsoToWgs(E, N){ const [lon, lat] = proj4("EPSG:3168", "WGS84", [E, N]); return { lat, lon }; }
+  function wgsToRso(lat, lon){ const [E, N] = proj4("WGS84", "EPSG:3168", [lon, lat]); return { E, N }; }
+
+  /* ================= systems ================= */
+  const SYSTEMS = {
+    sg:  { label:"Singapore MGR", short:"Singapore MGR", kind:"grid", cols:["Easting","Northing"], hint:"3485 5349 name · 3/4/5-digit halves" },
+    bn:  { label:"Brunei MGR (coming soon)", kind:"disabled" },
+    wgs_ll_dec:{ label:"WGS-84 · lat/long (decimal)", short:"WGS-84 lat/long", kind:"wgs", order:"latlon", fmt:"dec", cols:["Latitude","Longitude"],  hint:"lat lon name" },
+    wgs_ll_dms:{ label:"WGS-84 · lat/long (DMS)",     short:"WGS-84 lat/long", kind:"wgs", order:"latlon", fmt:"dms", cols:["Latitude","Longitude"],  hint:"1°23'16\"N 103°42'30\"E name" },
+    wgs_lp_dec:{ label:"WGS-84 · long/lat (decimal)", short:"WGS-84 long/lat", kind:"wgs", order:"lonlat", fmt:"dec", cols:["Longitude","Latitude"],  hint:"lon lat name" },
+    wgs_lp_dms:{ label:"WGS-84 · long/lat (DMS)",     short:"WGS-84 long/lat", kind:"wgs", order:"lonlat", fmt:"dms", cols:["Longitude","Latitude"],  hint:"103°42'30\"E 1°23'16\"N name" },
+  };
+  function buildSelect(sel, def){
+    sel.innerHTML =
+      `<option value="sg">Singapore MGR</option>` +
+      `<option value="bn" disabled>Brunei MGR (coming soon)</option>` +
+      `<optgroup label="WGS-84">` +
+        `<option value="wgs_ll_dec">lat/long · decimal</option>` +
+        `<option value="wgs_ll_dms">lat/long · DMS</option>` +
+        `<option value="wgs_lp_dec">long/lat · decimal</option>` +
+        `<option value="wgs_lp_dms">long/lat · DMS</option>` +
+      `</optgroup>`;
+    sel.value = def;
+  }
+
+  /* ================= formatting ================= */
+  // display SG grid halves at the point's own precision d (digits per half); default 8-fig
+  function gridHalves(pt){
+    const d = pt.d || 4, step = Math.pow(10, 5 - d), max = Math.pow(10, d) - 1;
+    const e = Math.floor((pt.E - 600000) / step), n = Math.floor((pt.N - 100000) / step);
+    if(e < 0 || e > max || n < 0 || n > max) return ["————", "————"]; // outside SG
+    return [String(e).padStart(d, "0"), String(n).padStart(d, "0")];
+  }
+  function decWgs(v, isLat){
+    const hemi = isLat ? (v>=0?"N":"S") : (v>=0?"E":"W");
+    return `${Math.abs(v).toFixed(5)}° ${hemi}`;
+  }
+  function dmsWgs(v, isLat){
+    const hemi = isLat ? (v>=0?"N":"S") : (v>=0?"E":"W");
+    let x=Math.abs(v), d=Math.floor(x), mF=(x-d)*60, m=Math.floor(mF), s=(mF-m)*60;
+    let sr=Math.round(s*1000)/1000; if(sr>=60){sr-=60;m++;} if(m>=60){m-=60;d++;}
+    return `${d}°${String(m).padStart(2,"0")}'${sr.toFixed(3).padStart(6,"0")}"${hemi}`;
+  }
+  // cells for a point under a given system key
+  function cellsFor(pt, key){
+    const s = SYSTEMS[key];
+    if(s.kind === "grid") return gridHalves(pt);
+    const la = s.fmt==="dec" ? decWgs(pt.lat,true)  : dmsWgs(pt.lat,true);
+    const lo = s.fmt==="dec" ? decWgs(pt.lon,false) : dmsWgs(pt.lon,false);
+    return s.order==="latlon" ? [la, lo] : [lo, la];
+  }
+
+  /* ================= parsing ================= */
+  // Singapore 8-figure grid ref + optional trailing label
+  function parseSG(line){
+    const s = line.trim().replace(/\s+/g, " ");
+    // space-separated halves: 3+3, 4+4, or 5+5 (must match), then optional label
+    let m = s.match(/^(\d{3,5}) (\d{3,5})(?: (.*))?$/);
+    if(m){
+      if(m[1].length !== m[2].length) return { error:`Both halves need the same digit count (got ${m[1].length}+${m[2].length})` };
+      return mkFromGrid(m[1], m[2], (m[3]||"").trim());
+    }
+    // contiguous 6 / 8 / 10 digits, split in half, then optional label
+    m = s.match(/^(\d{6}|\d{8}|\d{10})(?: (.*))?$/);
+    if(m){ const d = m[1].length/2; return mkFromGrid(m[1].slice(0,d), m[1].slice(d), (m[2]||"").trim()); }
+    return { error:`Expected two equal 3-, 4-, or 5-digit halves, e.g. 3485 5349 OP Alpha` };
+  }
+  // reconstruct full RSO E/N; centre of the grid square at the entered precision d
+  function mkFromGrid(aStr, bStr, name){
+    const d = aStr.length, step = Math.pow(10, 5 - d);
+    const E = LEAD_E*100000 + parseInt(aStr,10)*step + step/2;
+    const N = LEAD_N*100000 + parseInt(bStr,10)*step + step/2;
+    const { lat, lon } = rsoToWgs(E, N);
+    return { lat, lon, E, N, name, d };
+  }
+  // WGS-84 line: two coords (decimal or DMS) + optional trailing label
+  function parseWGS(line, order){
+    const s = line.trim();
+    let found = [], endIdx = 0;
+    if(/°|['′]/.test(s)){
+      const re = /(-?\d+(?:\.\d+)?)\s*°\s*(?:(\d+(?:\.\d+)?)\s*['′])?\s*(?:(\d+(?:\.\d+)?)\s*["″])?\s*([NSEWnsew])?/g;
+      let mm; while(found.length < 2 && (mm = re.exec(s))){
+        if(!mm[0].trim()){ re.lastIndex++; continue; }
+        const val = (+mm[1]) + (+(mm[2]||0))/60 + (+(mm[3]||0))/3600;
+        found.push({ val, hemi:(mm[4]||"").toUpperCase() }); endIdx = re.lastIndex;
+      }
+    } else {
+      const re = /([+-]?\d+(?:\.\d+)?)\s*([NSEWnsew])?/g;
+      let mm; while(found.length < 2 && (mm = re.exec(s))){
+        if(!mm[1]){ re.lastIndex++; continue; }
+        found.push({ val:parseFloat(mm[1]), hemi:(mm[2]||"").toUpperCase() }); endIdx = re.lastIndex;
+      }
+    }
+    if(found.length < 2) return { error:`Expected two coordinates, e.g. 1.388 103.708 OP Alpha` };
+    const name = s.slice(endIdx).replace(/^[\s,]+/, "").trim();
+    let lat, lon;
+    if(found[0].hemi || found[1].hemi){
+      for(const t of found){
+        if(t.hemi==="N") lat = Math.abs(t.val);
+        else if(t.hemi==="S") lat = -Math.abs(t.val);
+        else if(t.hemi==="E") lon = Math.abs(t.val);
+        else if(t.hemi==="W") lon = -Math.abs(t.val);
+      }
+      const bare = found.find(t => !t.hemi);
+      if(bare){ if(lat===undefined) lat = bare.val; else if(lon===undefined) lon = bare.val; }
+    } else if(order === "latlon"){ lat = found[0].val; lon = found[1].val; }
+    else { lon = found[0].val; lat = found[1].val; }
+    if(lat===undefined || lon===undefined) return { error:`Couldn’t read lat & lon from “${line.trim()}”` };
+    const { E, N } = wgsToRso(lat, lon);
+    return { lat, lon, E, N, name };
+  }
+
+  /* ================= maps URLs ================= */
+  function pinUrl(lat, lon){ return `https://www.google.com/maps/search/?api=1&query=${lat.toFixed(6)},${lon.toFixed(6)}`; }
+  function routeUrl(pts){
+    if(pts.length === 1) return pinUrl(pts[0].lat, pts[0].lon);
+    const ll = p => `${p.lat.toFixed(6)},${p.lon.toFixed(6)}`;
+    const mids = pts.slice(1, -1).map(ll);
+    let u = `https://www.google.com/maps/dir/?api=1&origin=${ll(pts[0])}&destination=${ll(pts[pts.length-1])}&travelmode=walking`;
+    if(mids.length) u += `&waypoints=${mids.join("%7C")}`;
+    return u;
+  }
+
+  /* ================= state + render ================= */
+  let points = []; // canonical [{lat,lon,E,N,name}]
+  const $ = s => document.querySelector(s);
+  const sys1 = $("#sys1"), sys2 = $("#sys2");
+  buildSelect(sys1, "sg"); buildSelect(sys2, "wgs_ll_dec");
+
+  function parseInput(){
+    const sys = SYSTEMS[sys1.value];
+    const lines = $("#input").value.split(/\r?\n/);
+    const errs = [];
+    points = [];
+    lines.forEach((line, i) => {
+      if(!line.trim()) return;
+      const p = sys.kind === "grid" ? parseSG(line) : parseWGS(line, sys.order);
+      if(p.error) errs.push(`Line ${i+1}: ${p.error}`);
+      else points.push(p);
+    });
+    renderErrors(errs);
+    renderAll();
+  }
+  function renderErrors(errs){
+    const el = $("#errors"); el.innerHTML = "";
+    errs.forEach(e => { const d=document.createElement("div"); d.className="err"; d.textContent="⚠ "+e; el.appendChild(d); });
+  }
+
+  function renderGrid(headEl, rowsEl, key){
+    const s = SYSTEMS[key];
+    if(s.kind === "disabled"){ headEl.innerHTML=""; rowsEl.innerHTML = `<div class="disabled-note">Brunei MGR — coming soon</div>`; return; }
+    headEl.innerHTML = `<span>#</span><span>${s.cols[0]}</span><span>${s.cols[1]}</span><span>Name</span>`;
+    if(!points.length){ rowsEl.innerHTML = `<div class="empty">Enter coordinates below to convert.</div>`; return; }
+    rowsEl.innerHTML = points.map((pt, i) => {
+      const [a, b] = cellsFor(pt, key);
+      return `<div class="row"><span class="n">${i+1}</span><span class="c">${a}</span><span class="c">${b}</span><span class="nm">${escapeHtml(pt.name)}</span></div>`;
+    }).join("");
+  }
+  function escapeHtml(s){ return (s||"").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+
+  function renderAll(){
+    renderGrid($("#head1"), $("#rows1"), sys1.value);
+    renderGrid($("#head2"), $("#rows2"), sys2.value);
+    const has = points.length > 0;
+    $("#copy1").disabled = !has || SYSTEMS[sys1.value].kind==="disabled";
+    $("#copy2").disabled = !has || SYSTEMS[sys2.value].kind==="disabled";
+    const maps = $("#mapsbtn");
+    if(has){ maps.href = routeUrl(points); maps.classList.remove("disabled"); }
+    else { maps.removeAttribute("href"); maps.classList.add("disabled"); }
+    // input hint follows Grid 1
+    $("#inlabel").textContent = SYSTEMS[sys1.value].short || SYSTEMS[sys1.value].label;
+    $("#inhint").textContent = SYSTEMS[sys1.value].hint || "coord coord name";
+  }
+
+  /* ================= copy ================= */
+  function copyGrid(key){
+    if(SYSTEMS[key].kind==="disabled" || !points.length) return;
+    const text = points.map(pt => {
+      const [a, b] = cellsFor(pt, key);
+      return pt.name ? `${a} ${b}  ${pt.name}` : `${a} ${b}`;
+    }).join("\n");
+    writeClip(text, `Copied ${points.length} point${points.length>1?"s":""}`);
+  }
+  async function writeClip(text, msg){
+    try{ await navigator.clipboard.writeText(text); }
+    catch(_){ const t=document.createElement("textarea"); t.value=text; document.body.appendChild(t); t.select(); document.execCommand("copy"); t.remove(); }
+    showToast(msg);
+  }
+  function showToast(msg){ const t=$("#toast"); t.textContent=msg; t.classList.add("show"); clearTimeout(showToast._t); showToast._t=setTimeout(()=>t.classList.remove("show"),1400); }
+
+  /* ================= wiring ================= */
+  let deb;
+  $("#input").addEventListener("input", e => {
+    e.target.style.height="auto"; e.target.style.height=Math.min(e.target.scrollHeight, window.innerHeight*0.22)+"px";
+    clearTimeout(deb); deb = setTimeout(parseInput, 120);
+  });
+  sys1.addEventListener("change", parseInput); // re-interpret input in new Grid 1 system
+  sys2.addEventListener("change", renderAll);
+  $("#copy1").addEventListener("click", () => copyGrid(sys1.value));
+  $("#copy2").addEventListener("click", () => copyGrid(sys2.value));
+  $("#clearbtn").addEventListener("click", () => { $("#input").value=""; $("#input").style.height="auto"; parseInput(); });
+
+  if("serviceWorker" in navigator){ window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(()=>{})); }
+
+  renderAll();
+  </script>
+</body>
+</html>
