@@ -19,131 +19,117 @@
   html,body{height:100%}
   body{
     margin:0; background:var(--bg); color:var(--text);
-    font:500 15px/1.35 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    font:500 15px/1.3 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
     display:flex; flex-direction:column; overscroll-behavior:none;
     padding-top:env(safe-area-inset-top); padding-bottom:env(safe-area-inset-bottom);
   }
-  header{
-    padding:8px 12px; border-bottom:1px solid var(--line);
-    display:flex; align-items:center; gap:8px; flex:0 0 auto;
-  }
-  header .badge{width:26px;height:26px;border-radius:7px;background:var(--accent);display:grid;place-items:center;color:var(--accent-ink);font-weight:800;font-size:11px}
-  header h1{margin:0; font-size:15px; letter-spacing:.2px}
-  header .sub{color:var(--muted); font-size:11px; font-weight:500}
+  header{padding:6px 12px; border-bottom:1px solid var(--line); display:flex; align-items:center; gap:8px; flex:0 0 auto}
+  header .badge{width:24px;height:24px;border-radius:6px;background:var(--accent);display:grid;place-items:center;color:var(--accent-ink);font-weight:800;font-size:10px}
+  header h1{margin:0; font-size:14px}
+  header .sub{color:var(--muted); font-size:11px}
 
-  /* ---- panels ---- */
-  .panel{flex:1 1 0; min-height:0; display:flex; flex-direction:column; border-bottom:1px solid var(--line)}
-  .panel-head{
-    display:flex; align-items:center; gap:8px; padding:6px 10px; flex:0 0 auto;
-  }
+  .panels{flex:1 1 auto; min-height:0; display:flex; flex-direction:column}
+  .panel{flex:1 1 0; min-height:0; display:flex; flex-direction:column}
+  .panel:first-child{border-bottom:2px solid var(--line)}
+  .panel-head{display:flex; align-items:center; gap:6px; padding:6px 8px; flex:0 0 auto}
   .tag{width:8px;height:8px;border-radius:50%;flex:0 0 auto}
   .tag.a{background:var(--accent)} .tag.b{background:var(--g2)}
   select.sys{
     flex:1 1 auto; min-width:0; appearance:none; -webkit-appearance:none;
-    background:var(--panel2); color:var(--text); border:1px solid var(--line);
-    border-radius:9px; padding:8px 30px 8px 10px; font-size:14px; font-weight:700;
+    background:var(--panel2); color:var(--text); border:1px solid var(--line); border-radius:8px;
+    padding:7px 26px 7px 9px; font-size:13px; font-weight:700;
     background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);
-    background-position:calc(100% - 16px) 50%,calc(100% - 11px) 50%; background-size:5px 5px,5px 5px; background-repeat:no-repeat;
+    background-position:calc(100% - 14px) 50%,calc(100% - 10px) 50%; background-size:5px 5px,5px 5px; background-repeat:no-repeat;
   }
-  button.copy{
-    flex:0 0 auto; border:1px solid var(--line); background:var(--panel2); color:var(--accent);
-    font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.5px;
-    padding:8px 12px; border-radius:9px; cursor:pointer;
-  }
-  button.copy:active{background:var(--line)}
-  button.copy:disabled{opacity:.4}
-  .panel-body{flex:1 1 auto; overflow:auto; -webkit-overflow-scrolling:touch; padding:0 10px 8px}
-  .colhead,.row{
-    display:grid; grid-template-columns:22px minmax(84px,1fr) minmax(84px,1fr) minmax(64px,1.1fr);
-    gap:6px; align-items:center;
-  }
-  .colhead{
-    position:sticky; top:0; z-index:2; background:var(--bg);
-    padding:2px 2px 6px; color:var(--muted); font-size:10px; font-weight:800;
-    text-transform:uppercase; letter-spacing:.5px;
-  }
+  .pbtn{flex:0 0 auto; border:1px solid var(--line); background:var(--panel2); color:var(--accent); font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.4px; padding:7px 9px; border-radius:8px; cursor:pointer}
+  .pbtn:active{background:var(--line)} .pbtn:disabled{opacity:.4}
+  .panel-body{flex:1 1 auto; overflow:auto; -webkit-overflow-scrolling:touch; padding:0 8px 6px}
+  .colhead,.row{display:grid; grid-template-columns:20px minmax(66px,1fr) minmax(66px,1fr) minmax(58px,1.05fr) 22px 28px; gap:5px; align-items:center}
+  .colhead{position:sticky; top:0; z-index:2; background:var(--bg); padding:2px 2px 5px; color:var(--muted); font-size:9.5px; font-weight:800; text-transform:uppercase; letter-spacing:.4px}
   .colhead span{white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
-  .rows{display:flex; flex-direction:column; gap:5px}
-  .row{
-    background:var(--panel); border:1px solid var(--line); border-radius:9px; padding:7px 8px;
+  .rows{display:flex; flex-direction:column; gap:4px}
+  .row{background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:4px 5px}
+  .row.empty{background:transparent; border-style:dashed}
+  .row.dragging{opacity:.85; border-color:var(--accent)}
+  .row.drop-above{box-shadow:inset 0 3px 0 var(--accent)}
+  .row.drop-below{box-shadow:inset 0 -3px 0 var(--accent)}
+  .row .n{color:var(--muted); font-size:11px; font-weight:700; text-align:center; font-variant-numeric:tabular-nums}
+  .cell{
+    width:100%; min-width:0; border:1px solid transparent; background:var(--panel2); color:var(--text);
+    border-radius:6px; padding:7px 6px; font:600 14px/1 ui-monospace,SFMono-Regular,Menlo,monospace; letter-spacing:.3px;
   }
-  .row .n{color:var(--muted); font-size:12px; font-weight:700; font-variant-numeric:tabular-nums}
-  .row .c{font-variant-numeric:tabular-nums; letter-spacing:.5px; font-size:15px; white-space:nowrap}
-  .row .nm{color:var(--muted); font-size:13px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
-  .empty{color:var(--muted); font-size:13px; padding:14px 4px; text-align:center}
-  .disabled-note{color:var(--warn); font-size:12px; padding:14px 4px; text-align:center}
+  .row.empty .cell{background:rgba(255,255,255,.03)}
+  .cell.nm{font-family:inherit; letter-spacing:normal}
+  .cell:focus{outline:none; border-color:var(--accent); background:var(--panel2)}
+  .cell::placeholder{color:var(--muted); font-weight:500; opacity:.7}
+  .cell.bad{border-color:var(--danger); background:rgba(248,113,113,.12)}
+  .handle{color:var(--muted); text-align:center; cursor:grab; touch-action:none; font-size:16px; user-select:none}
+  .row.empty .handle{visibility:hidden}
+  .del{width:28px;height:32px;border:none;background:transparent;color:var(--danger);font-size:18px;border-radius:7px;cursor:pointer}
+  .row.empty .del{visibility:hidden}
 
-  /* ---- input dock ---- */
-  .dock{flex:0 0 auto; background:var(--panel); padding:8px 10px 10px; border-top:2px solid var(--line)}
-  .dock-label{color:var(--muted); font-size:12px; margin:0 2px 6px}
-  .dock-label b{color:var(--accent)}
-  .dock-label code{background:var(--panel2); padding:1px 5px; border-radius:4px; color:var(--text); font-size:11px}
-  textarea#input{
-    width:100%; max-height:22vh; min-height:64px; resize:none; border-radius:10px;
-    border:1px solid var(--line); background:var(--panel2); color:var(--text);
-    padding:10px 12px; font:600 16px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace; letter-spacing:.5px; overflow-y:auto;
-  }
-  textarea#input::placeholder{color:var(--muted); font-weight:500; letter-spacing:normal}
-  #errors{margin:6px 2px 0; display:flex; flex-direction:column; gap:3px}
-  .err{color:var(--danger); font-size:12px; font-weight:600}
-  .dock-actions{display:flex; gap:8px; margin-top:8px}
-  a.btn,button.btn{
-    flex:1 1 0; min-height:48px; display:flex; align-items:center; justify-content:center; gap:8px;
-    border-radius:11px; border:1px solid var(--line); background:var(--panel2); color:var(--text);
-    font-size:15px; font-weight:800; cursor:pointer; text-decoration:none; padding:0 12px;
-  }
-  a.btn.primary{background:var(--ok); color:#04321f; border-color:var(--ok)}
-  a.btn.disabled{opacity:.4; pointer-events:none}
-  button.btn.ghost{flex:0 0 auto; color:var(--danger)}
-  .toast{
-    position:fixed; left:50%; bottom:calc(20px + env(safe-area-inset-bottom)); transform:translateX(-50%) translateY(20px);
-    background:var(--ok); color:#04321f; font-weight:800; padding:10px 18px; border-radius:999px; opacity:0;
-    transition:all .2s ease; pointer-events:none; z-index:100;
-  }
-  .toast.show{opacity:1; transform:translateX(-50%) translateY(0)}
+  .mapsbar{flex:0 0 auto; padding:8px 10px; border-top:1px solid var(--line); background:var(--panel)}
+  a.maps{display:flex;align-items:center;justify-content:center;gap:8px;min-height:50px;border-radius:12px;background:var(--ok);color:#04321f;font-weight:800;font-size:15px;text-decoration:none}
+  a.maps.disabled{opacity:.4;pointer-events:none;background:var(--panel2);color:var(--muted)}
+
+  /* bulk paste overlay */
+  .overlay{position:fixed;inset:0;background:rgba(2,6,23,.72);z-index:60;display:none;align-items:flex-end}
+  .overlay.open{display:flex}
+  .sheet{width:100%;background:var(--panel);border-top-left-radius:16px;border-top-right-radius:16px;padding:14px 14px calc(14px + env(safe-area-inset-bottom));border-top:1px solid var(--line)}
+  .sheet h3{margin:0 0 4px;font-size:16px}
+  .sheet .desc{color:var(--muted);font-size:12px;margin-bottom:8px}
+  .sheet .desc code{background:var(--panel2);padding:1px 5px;border-radius:4px;color:var(--text)}
+  textarea#pastebox{width:100%;height:26vh;resize:none;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--text);padding:10px 12px;font:600 15px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace}
+  #pasteerr{margin:6px 2px 0;display:flex;flex-direction:column;gap:3px}
+  #pasteerr .err{color:var(--danger);font-size:12px;font-weight:600}
+  .sheet-actions{display:flex;gap:8px;margin-top:10px}
+  .sheet-actions button{flex:1 1 0;min-height:48px;border-radius:11px;border:1px solid var(--line);background:var(--panel2);color:var(--text);font-size:15px;font-weight:800;cursor:pointer}
+  .sheet-actions button.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+
+  .toast{position:fixed;left:50%;bottom:calc(70px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);background:var(--ok);color:#04321f;font-weight:800;padding:10px 18px;border-radius:999px;opacity:0;transition:all .2s ease;pointer-events:none;z-index:100}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 </style>
 </head>
 <body>
   <header>
     <div class="badge">SG</div>
-    <div><h1>Grid ⇄ Maps</h1><div class="sub">RSO / WGS-84 coordinate converter</div></div>
+    <div><h1>Coordinate Converter</h1><div class="sub">RSO / WGS-84 · two-way</div></div>
   </header>
 
-  <!-- GRID 1 -->
-  <section class="panel">
-    <div class="panel-head">
-      <span class="tag a"></span>
-      <select class="sys" id="sys1"></select>
-      <button class="copy" id="copy1" disabled>Copy</button>
-    </div>
-    <div class="panel-body">
-      <div class="colhead" id="head1"></div>
-      <div class="rows" id="rows1"></div>
-    </div>
-  </section>
+  <div class="panels">
+    <section class="panel" data-panel="1">
+      <div class="panel-head">
+        <span class="tag a"></span>
+        <select class="sys" id="sys1"></select>
+        <button class="pbtn" data-act="paste" data-p="1">Paste</button>
+        <button class="pbtn" data-act="copy" data-p="1">Copy</button>
+      </div>
+      <div class="panel-body" data-p="1"><div class="colhead" id="head1"></div><div class="rows" id="rows1"></div></div>
+    </section>
+    <section class="panel" data-panel="2">
+      <div class="panel-head">
+        <span class="tag b"></span>
+        <select class="sys" id="sys2"></select>
+        <button class="pbtn" data-act="paste" data-p="2">Paste</button>
+        <button class="pbtn" data-act="copy" data-p="2">Copy</button>
+      </div>
+      <div class="panel-body" data-p="2"><div class="colhead" id="head2"></div><div class="rows" id="rows2"></div></div>
+    </section>
+  </div>
 
-  <!-- GRID 2 -->
-  <section class="panel">
-    <div class="panel-head">
-      <span class="tag b"></span>
-      <select class="sys" id="sys2"></select>
-      <button class="copy" id="copy2" disabled>Copy</button>
-    </div>
-    <div class="panel-body">
-      <div class="colhead" id="head2"></div>
-      <div class="rows" id="rows2"></div>
-    </div>
-  </section>
+  <div class="mapsbar"><a class="maps disabled" id="maps" target="_blank" rel="noopener">📍 Open in Google Maps</a></div>
 
-  <!-- INPUT -->
-  <div class="dock">
-    <div class="dock-label">Input · <b id="inlabel">Singapore MGR</b> — one point per line: <code id="inhint">EEEE NNNN name</code></div>
-    <textarea id="input" inputmode="text" autocomplete="off" autocapitalize="off" spellcheck="false"
-      placeholder="3485 5349 OP Alpha&#10;3514 5189 OP Bravo"></textarea>
-    <div id="errors"></div>
-    <div class="dock-actions">
-      <a class="btn primary disabled" id="mapsbtn" target="_blank" rel="noopener">📍 Open in Google Maps</a>
-      <button class="btn ghost" id="clearbtn" title="Clear input">Clear</button>
+  <!-- bulk paste overlay -->
+  <div class="overlay" id="overlay">
+    <div class="sheet">
+      <h3 id="sheet-title">Bulk paste</h3>
+      <div class="desc" id="sheet-desc"></div>
+      <textarea id="pastebox" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="One point per line"></textarea>
+      <div id="pasteerr"></div>
+      <div class="sheet-actions">
+        <button id="paste-cancel">Cancel</button>
+        <button id="paste-add" class="primary">Add</button>
+      </div>
     </div>
   </div>
 
@@ -152,216 +138,343 @@
   <script src="proj4.js"></script>
   <script>
   "use strict";
-
-  /* ================= conversion core (validated EPSG:3168 RSO) ================= */
+  /* ===================== conversion core (validated EPSG:3168 RSO) ===================== */
   proj4.defs("EPSG:3168",
     "+proj=omerc +no_uoff +lat_0=4 +lonc=102.25 +alpha=323.0257905 +gamma=323.130102361111 " +
     "+k=0.99984 +x_0=804670.24 +y_0=0 +ellps=evrst69 +towgs84=-11,851,5,0,0,0,0 +units=m +no_defs");
-  const LEAD_E = 6, LEAD_N = 1;
-  function rsoToWgs(E, N){ const [lon, lat] = proj4("EPSG:3168", "WGS84", [E, N]); return { lat, lon }; }
-  function wgsToRso(lat, lon){ const [E, N] = proj4("WGS84", "EPSG:3168", [lon, lat]); return { E, N }; }
+  const LEAD_E=6, LEAD_N=1;
+  function rsoToWgs(E,N){ const [lon,lat]=proj4("EPSG:3168","WGS84",[E,N]); return {lat,lon}; }
+  function wgsToRso(lat,lon){ const [E,N]=proj4("WGS84","EPSG:3168",[lon,lat]); return {E,N}; }
 
-  /* ================= systems ================= */
+  /* ===================== systems ===================== */
   const SYSTEMS = {
-    sg:  { label:"Singapore MGR", short:"Singapore MGR", kind:"grid", cols:["Easting","Northing"], hint:"3485 5349 name · 3/4/5-digit halves" },
-    bn:  { label:"Brunei MGR (coming soon)", kind:"disabled" },
-    wgs_ll_dec:{ label:"WGS-84 · lat/long (decimal)", short:"WGS-84 lat/long", kind:"wgs", order:"latlon", fmt:"dec", cols:["Latitude","Longitude"],  hint:"lat lon name" },
-    wgs_ll_dms:{ label:"WGS-84 · lat/long (DMS)",     short:"WGS-84 lat/long", kind:"wgs", order:"latlon", fmt:"dms", cols:["Latitude","Longitude"],  hint:"1°23'16\"N 103°42'30\"E name" },
-    wgs_lp_dec:{ label:"WGS-84 · long/lat (decimal)", short:"WGS-84 long/lat", kind:"wgs", order:"lonlat", fmt:"dec", cols:["Longitude","Latitude"],  hint:"lon lat name" },
-    wgs_lp_dms:{ label:"WGS-84 · long/lat (DMS)",     short:"WGS-84 long/lat", kind:"wgs", order:"lonlat", fmt:"dms", cols:["Longitude","Latitude"],  hint:"103°42'30\"E 1°23'16\"N name" },
+    sg:{ label:"Singapore MGR", kind:"grid", cols:["Easting","Northing"], ph:["3485","5349"], hint:"EEEE NNNN name · 3/4/5-digit halves" },
+    bn:{ label:"Brunei MGR (coming soon)", kind:"disabled" },
+    wgs_ll_dec:{ label:"WGS-84 lat/long (dec)", kind:"wgs", order:"latlon", fmt:"dec", cols:["Latitude","Longitude"], ph:["1.38802","103.70846"], hint:"lat lon name" },
+    wgs_ll_dms:{ label:"WGS-84 lat/long (DMS)", kind:"wgs", order:"latlon", fmt:"dms", cols:["Latitude","Longitude"], ph:["1°23'16\"N","103°42'30\"E"], hint:"1°23'16\"N 103°42'30\"E name" },
+    wgs_lp_dec:{ label:"WGS-84 long/lat (dec)", kind:"wgs", order:"lonlat", fmt:"dec", cols:["Longitude","Latitude"], ph:["103.70846","1.38802"], hint:"lon lat name" },
+    wgs_lp_dms:{ label:"WGS-84 long/lat (DMS)", kind:"wgs", order:"lonlat", fmt:"dms", cols:["Longitude","Latitude"], ph:["103°42'30\"E","1°23'16\"N"], hint:"103°42'30\"E 1°23'16\"N name" },
   };
   function buildSelect(sel, def){
     sel.innerHTML =
-      `<option value="sg">Singapore MGR</option>` +
-      `<option value="bn" disabled>Brunei MGR (coming soon)</option>` +
-      `<optgroup label="WGS-84">` +
-        `<option value="wgs_ll_dec">lat/long · decimal</option>` +
-        `<option value="wgs_ll_dms">lat/long · DMS</option>` +
-        `<option value="wgs_lp_dec">long/lat · decimal</option>` +
-        `<option value="wgs_lp_dms">long/lat · DMS</option>` +
+      `<option value="sg">Singapore MGR</option>`+
+      `<option value="bn" disabled>Brunei MGR (coming soon)</option>`+
+      `<optgroup label="WGS-84">`+
+        `<option value="wgs_ll_dec">lat/long · decimal</option>`+
+        `<option value="wgs_ll_dms">lat/long · DMS</option>`+
+        `<option value="wgs_lp_dec">long/lat · decimal</option>`+
+        `<option value="wgs_lp_dms">long/lat · DMS</option>`+
       `</optgroup>`;
     sel.value = def;
   }
 
-  /* ================= formatting ================= */
-  // display SG grid halves at the point's own precision d (digits per half); default 8-fig
-  function gridHalves(pt){
-    const d = pt.d || 4, step = Math.pow(10, 5 - d), max = Math.pow(10, d) - 1;
-    const e = Math.floor((pt.E - 600000) / step), n = Math.floor((pt.N - 100000) / step);
-    if(e < 0 || e > max || n < 0 || n > max) return ["————", "————"]; // outside SG
-    return [String(e).padStart(d, "0"), String(n).padStart(d, "0")];
+  /* ===================== formatting ===================== */
+  function gridHalvesEN(E,N,d){
+    d=d||4; const step=Math.pow(10,5-d), max=Math.pow(10,d)-1;
+    const e=Math.floor((E-600000)/step), n=Math.floor((N-100000)/step);
+    if(e<0||e>max||n<0||n>max) return ["————","————"];
+    return [String(e).padStart(d,"0"), String(n).padStart(d,"0")];
   }
-  function decWgs(v, isLat){
-    const hemi = isLat ? (v>=0?"N":"S") : (v>=0?"E":"W");
-    return `${Math.abs(v).toFixed(5)}° ${hemi}`;
+  function decWgs(v,isLat){ const h=isLat?(v>=0?"N":"S"):(v>=0?"E":"W"); return `${Math.abs(v).toFixed(5)}° ${h}`; }
+  function dmsWgs(v,isLat){
+    const h=isLat?(v>=0?"N":"S"):(v>=0?"E":"W");
+    let x=Math.abs(v),d=Math.floor(x),mF=(x-d)*60,m=Math.floor(mF),s=(mF-m)*60,sr=Math.round(s*1000)/1000;
+    if(sr>=60){sr-=60;m++;} if(m>=60){m-=60;d++;}
+    return `${d}°${String(m).padStart(2,"0")}'${sr.toFixed(3).padStart(6,"0")}"${h}`;
   }
-  function dmsWgs(v, isLat){
-    const hemi = isLat ? (v>=0?"N":"S") : (v>=0?"E":"W");
-    let x=Math.abs(v), d=Math.floor(x), mF=(x-d)*60, m=Math.floor(mF), s=(mF-m)*60;
-    let sr=Math.round(s*1000)/1000; if(sr>=60){sr-=60;m++;} if(m>=60){m-=60;d++;}
-    return `${d}°${String(m).padStart(2,"0")}'${sr.toFixed(3).padStart(6,"0")}"${hemi}`;
-  }
-  // cells for a point under a given system key
+  // [cellA, cellB] strings for a point in a system
   function cellsFor(pt, key){
-    const s = SYSTEMS[key];
-    if(s.kind === "grid") return gridHalves(pt);
-    const la = s.fmt==="dec" ? decWgs(pt.lat,true)  : dmsWgs(pt.lat,true);
-    const lo = s.fmt==="dec" ? decWgs(pt.lon,false) : dmsWgs(pt.lon,false);
-    return s.order==="latlon" ? [la, lo] : [lo, la];
+    const s=SYSTEMS[key];
+    if(s.kind==="grid"){ const {E,N}=wgsToRso(pt.lat,pt.lon); return gridHalvesEN(E,N,pt.d); }
+    const la = s.fmt==="dec"?decWgs(pt.lat,true):dmsWgs(pt.lat,true);
+    const lo = s.fmt==="dec"?decWgs(pt.lon,false):dmsWgs(pt.lon,false);
+    return s.order==="latlon"?[la,lo]:[lo,la];
   }
 
-  /* ================= parsing ================= */
-  // Singapore 8-figure grid ref + optional trailing label
-  function parseSG(line){
-    const s = line.trim().replace(/\s+/g, " ");
-    // space-separated halves: 3+3, 4+4, or 5+5 (must match), then optional label
-    let m = s.match(/^(\d{3,5}) (\d{3,5})(?: (.*))?$/);
-    if(m){
-      if(m[1].length !== m[2].length) return { error:`Both halves need the same digit count (got ${m[1].length}+${m[2].length})` };
-      return mkFromGrid(m[1], m[2], (m[3]||"").trim());
-    }
-    // contiguous 6 / 8 / 10 digits, split in half, then optional label
-    m = s.match(/^(\d{6}|\d{8}|\d{10})(?: (.*))?$/);
-    if(m){ const d = m[1].length/2; return mkFromGrid(m[1].slice(0,d), m[1].slice(d), (m[2]||"").trim()); }
-    return { error:`Expected two equal 3-, 4-, or 5-digit halves, e.g. 3485 5349 OP Alpha` };
+  /* ===================== parsing ===================== */
+  function mkFromGrid(aStr,bStr){ // strings of equal length 3..5
+    const d=aStr.length, step=Math.pow(10,5-d);
+    const E=LEAD_E*100000+parseInt(aStr,10)*step+step/2;
+    const N=LEAD_N*100000+parseInt(bStr,10)*step+step/2;
+    const {lat,lon}=rsoToWgs(E,N); return {lat,lon,d};
   }
-  // reconstruct full RSO E/N; centre of the grid square at the entered precision d
-  function mkFromGrid(aStr, bStr, name){
-    const d = aStr.length, step = Math.pow(10, 5 - d);
-    const E = LEAD_E*100000 + parseInt(aStr,10)*step + step/2;
-    const N = LEAD_N*100000 + parseInt(bStr,10)*step + step/2;
-    const { lat, lon } = rsoToWgs(E, N);
-    return { lat, lon, E, N, name, d };
-  }
-  // WGS-84 line: two coords (decimal or DMS) + optional trailing label
-  function parseWGS(line, order){
-    const s = line.trim();
-    let found = [], endIdx = 0;
-    if(/°|['′]/.test(s)){
-      const re = /(-?\d+(?:\.\d+)?)\s*°\s*(?:(\d+(?:\.\d+)?)\s*['′])?\s*(?:(\d+(?:\.\d+)?)\s*["″])?\s*([NSEWnsew])?/g;
-      let mm; while(found.length < 2 && (mm = re.exec(s))){
-        if(!mm[0].trim()){ re.lastIndex++; continue; }
-        const val = (+mm[1]) + (+(mm[2]||0))/60 + (+(mm[3]||0))/3600;
-        found.push({ val, hemi:(mm[4]||"").toUpperCase() }); endIdx = re.lastIndex;
-      }
-    } else {
-      const re = /([+-]?\d+(?:\.\d+)?)\s*([NSEWnsew])?/g;
-      let mm; while(found.length < 2 && (mm = re.exec(s))){
-        if(!mm[1]){ re.lastIndex++; continue; }
-        found.push({ val:parseFloat(mm[1]), hemi:(mm[2]||"").toUpperCase() }); endIdx = re.lastIndex;
-      }
+  // one WGS coordinate value from a string -> {val, hemi} | null
+  function parseOneCoord(str){
+    const s=String(str).trim(); if(!s) return null;
+    if(/[°'′"″]/.test(s)){
+      const m=s.match(/(-?\d+(?:\.\d+)?)\s*°\s*(?:(\d+(?:\.\d+)?)\s*['′])?\s*(?:(\d+(?:\.\d+)?)\s*["″])?\s*([NSEWnsew])?/);
+      if(!m) return null;
+      return { val:(+m[1])+(+(m[2]||0))/60+(+(m[3]||0))/3600, hemi:(m[4]||"").toUpperCase() };
     }
-    if(found.length < 2) return { error:`Expected two coordinates, e.g. 1.388 103.708 OP Alpha` };
-    const name = s.slice(endIdx).replace(/^[\s,]+/, "").trim();
+    const m=s.match(/^\s*([+-]?\d+(?:\.\d+)?)\s*°?\s*([NSEWnsew])?\s*$/);
+    if(!m) return null;
+    return { val:parseFloat(m[1]), hemi:(m[2]||"").toUpperCase() };
+  }
+  // ---- per-cell parsers (inline editing) ----
+  function parseSGCells(a,b){
+    a=a.trim(); b=b.trim();
+    const okA=/^\d{3,5}$/.test(a), okB=/^\d{3,5}$/.test(b);
+    if(!okA||!okB || a.length!==b.length) return { error:true, badA:!okA, badB:!okB || a.length!==b.length };
+    return mkFromGrid(a,b);
+  }
+  function parseWGSCells(a,b,order){
+    const pa=parseOneCoord(a), pb=parseOneCoord(b);
+    if(!pa||!pb) return { error:true, badA:!pa, badB:!pb };
     let lat, lon;
-    if(found[0].hemi || found[1].hemi){
-      for(const t of found){
-        if(t.hemi==="N") lat = Math.abs(t.val);
-        else if(t.hemi==="S") lat = -Math.abs(t.val);
-        else if(t.hemi==="E") lon = Math.abs(t.val);
-        else if(t.hemi==="W") lon = -Math.abs(t.val);
+    if(pa.hemi||pb.hemi){
+      for(const t of [pa,pb]){
+        if(t.hemi==="N")lat=Math.abs(t.val); else if(t.hemi==="S")lat=-Math.abs(t.val);
+        else if(t.hemi==="E")lon=Math.abs(t.val); else if(t.hemi==="W")lon=-Math.abs(t.val);
       }
-      const bare = found.find(t => !t.hemi);
-      if(bare){ if(lat===undefined) lat = bare.val; else if(lon===undefined) lon = bare.val; }
-    } else if(order === "latlon"){ lat = found[0].val; lon = found[1].val; }
-    else { lon = found[0].val; lat = found[1].val; }
-    if(lat===undefined || lon===undefined) return { error:`Couldn’t read lat & lon from “${line.trim()}”` };
-    const { E, N } = wgsToRso(lat, lon);
-    return { lat, lon, E, N, name };
+      const bare=[pa,pb].find(t=>!t.hemi);
+      if(bare){ if(lat===undefined)lat=bare.val; else if(lon===undefined)lon=bare.val; }
+    } else if(order==="latlon"){ lat=pa.val; lon=pb.val; } else { lon=pa.val; lat=pb.val; }
+    if(lat===undefined||lon===undefined) return { error:true, badA:true, badB:true };
+    return { lat, lon };
+  }
+  function parseCells(key,a,b){
+    const s=SYSTEMS[key];
+    return s.kind==="grid" ? parseSGCells(a,b) : parseWGSCells(a,b,s.order);
+  }
+  // ---- per-line parsers (bulk paste) ----
+  function parseSGLine(line){
+    const s=line.trim().replace(/\s+/g," ");
+    let m=s.match(/^(\d{3,5}) (\d{3,5})(?: (.*))?$/);
+    if(m){ if(m[1].length!==m[2].length) return {error:`halves differ (${m[1].length}+${m[2].length})`}; const p=mkFromGrid(m[1],m[2]); p.name=(m[3]||"").trim(); return p; }
+    m=s.match(/^(\d{6}|\d{8}|\d{10})(?: (.*))?$/);
+    if(m){ const d=m[1].length/2; const p=mkFromGrid(m[1].slice(0,d),m[1].slice(d)); p.name=(m[2]||"").trim(); return p; }
+    return {error:`expected EEEE NNNN [name]`};
+  }
+  function parseWGSLine(line, order){
+    const s=line.trim(); let found=[], endIdx=0;
+    if(/°|['′]/.test(s)){
+      const re=/(-?\d+(?:\.\d+)?)\s*°\s*(?:(\d+(?:\.\d+)?)\s*['′])?\s*(?:(\d+(?:\.\d+)?)\s*["″])?\s*([NSEWnsew])?/g;
+      let mm; while(found.length<2&&(mm=re.exec(s))){ if(!mm[0].trim()){re.lastIndex++;continue;} found.push({val:(+mm[1])+(+(mm[2]||0))/60+(+(mm[3]||0))/3600,hemi:(mm[4]||"").toUpperCase()}); endIdx=re.lastIndex; }
+    } else {
+      const re=/([+-]?\d+(?:\.\d+)?)\s*([NSEWnsew])?/g;
+      let mm; while(found.length<2&&(mm=re.exec(s))){ if(!mm[1]){re.lastIndex++;continue;} found.push({val:parseFloat(mm[1]),hemi:(mm[2]||"").toUpperCase()}); endIdx=re.lastIndex; }
+    }
+    if(found.length<2) return {error:`expected two coordinates`};
+    const name=s.slice(endIdx).replace(/^[\s,]+/,"").trim();
+    let lat,lon;
+    if(found[0].hemi||found[1].hemi){
+      for(const t of found){ if(t.hemi==="N")lat=Math.abs(t.val); else if(t.hemi==="S")lat=-Math.abs(t.val); else if(t.hemi==="E")lon=Math.abs(t.val); else if(t.hemi==="W")lon=-Math.abs(t.val); }
+      const bare=found.find(t=>!t.hemi); if(bare){ if(lat===undefined)lat=bare.val; else if(lon===undefined)lon=bare.val; }
+    } else if(order==="latlon"){ lat=found[0].val; lon=found[1].val; } else { lon=found[0].val; lat=found[1].val; }
+    if(lat===undefined||lon===undefined) return {error:`couldn't read lat & lon`};
+    return {lat,lon,name};
   }
 
-  /* ================= maps URLs ================= */
-  function pinUrl(lat, lon){ return `https://www.google.com/maps/search/?api=1&query=${lat.toFixed(6)},${lon.toFixed(6)}`; }
+  /* ===================== maps ===================== */
+  function pinUrl(lat,lon){ return `https://www.google.com/maps/search/?api=1&query=${lat.toFixed(6)},${lon.toFixed(6)}`; }
   function routeUrl(pts){
-    if(pts.length === 1) return pinUrl(pts[0].lat, pts[0].lon);
-    const ll = p => `${p.lat.toFixed(6)},${p.lon.toFixed(6)}`;
-    const mids = pts.slice(1, -1).map(ll);
-    let u = `https://www.google.com/maps/dir/?api=1&origin=${ll(pts[0])}&destination=${ll(pts[pts.length-1])}&travelmode=walking`;
-    if(mids.length) u += `&waypoints=${mids.join("%7C")}`;
+    if(pts.length===1) return pinUrl(pts[0].lat,pts[0].lon);
+    const ll=p=>`${p.lat.toFixed(6)},${p.lon.toFixed(6)}`;
+    const mids=pts.slice(1,-1).map(ll);
+    let u=`https://www.google.com/maps/dir/?api=1&origin=${ll(pts[0])}&destination=${ll(pts[pts.length-1])}&travelmode=walking`;
+    if(mids.length) u+=`&waypoints=${mids.join("%7C")}`;
     return u;
   }
 
-  /* ================= state + render ================= */
-  let points = []; // canonical [{lat,lon,E,N,name}]
-  const $ = s => document.querySelector(s);
-  const sys1 = $("#sys1"), sys2 = $("#sys2");
-  buildSelect(sys1, "sg"); buildSelect(sys2, "wgs_ll_dec");
+  /* ===================== state + render ===================== */
+  let points = []; // {lat,lon,name,d}
+  const $=s=>document.querySelector(s);
+  const sys1=$("#sys1"), sys2=$("#sys2");
+  buildSelect(sys1,"sg"); buildSelect(sys2,"wgs_ll_dec");
+  const sysKey = p => (p==="1"?sys1:sys2).value;
+  const oppKey = p => (p==="1"?sys2:sys1).value;
+  function esc(s){ return (s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
 
-  function parseInput(){
-    const sys = SYSTEMS[sys1.value];
-    const lines = $("#input").value.split(/\r?\n/);
-    const errs = [];
-    points = [];
-    lines.forEach((line, i) => {
-      if(!line.trim()) return;
-      const p = sys.kind === "grid" ? parseSG(line) : parseWGS(line, sys.order);
-      if(p.error) errs.push(`Line ${i+1}: ${p.error}`);
-      else points.push(p);
+  function renderPanel(p){
+    const key=sysKey(p), s=SYSTEMS[key];
+    const head=$("#head"+p), rows=$("#rows"+p);
+    if(s.kind==="disabled"){ head.innerHTML=""; rows.innerHTML=`<div style="color:var(--warn);padding:14px;text-align:center;font-size:13px">Brunei MGR — coming soon</div>`; return; }
+    head.innerHTML=`<span>#</span><span>${s.cols[0]}</span><span>${s.cols[1]}</span><span>Name</span><span></span><span></span>`;
+    let html="";
+    points.forEach((pt,i)=>{
+      const [a,b]=cellsFor(pt,key);
+      html+=rowHtml(p,i,esc(a),esc(b),esc(pt.name||""),false,s);
     });
-    renderErrors(errs);
-    renderAll();
+    // one empty row at the bottom
+    html+=rowHtml(p,points.length,"","","",true,s);
+    rows.innerHTML=html;
   }
-  function renderErrors(errs){
-    const el = $("#errors"); el.innerHTML = "";
-    errs.forEach(e => { const d=document.createElement("div"); d.className="err"; d.textContent="⚠ "+e; el.appendChild(d); });
+  function rowHtml(p,i,a,b,nm,empty,s){
+    return `<div class="row${empty?" empty":""}" data-i="${i}">`+
+      `<span class="n">${i+1}</span>`+
+      `<input class="cell a" inputmode="${s.kind==="grid"?"numeric":"text"}" autocomplete="off" autocapitalize="off" spellcheck="false" value="${a}" placeholder="${empty?s.ph[0]:""}">`+
+      `<input class="cell b" inputmode="${s.kind==="grid"?"numeric":"text"}" autocomplete="off" autocapitalize="off" spellcheck="false" value="${b}" placeholder="${empty?s.ph[1]:""}">`+
+      `<input class="cell nm" autocomplete="off" spellcheck="false" value="${nm}" placeholder="${empty?"name":""}">`+
+      `<span class="handle" title="Drag to reorder">⠿</span>`+
+      `<button class="del" aria-label="Delete">✕</button>`+
+    `</div>`;
   }
-
-  function renderGrid(headEl, rowsEl, key){
-    const s = SYSTEMS[key];
-    if(s.kind === "disabled"){ headEl.innerHTML=""; rowsEl.innerHTML = `<div class="disabled-note">Brunei MGR — coming soon</div>`; return; }
-    headEl.innerHTML = `<span>#</span><span>${s.cols[0]}</span><span>${s.cols[1]}</span><span>Name</span>`;
-    if(!points.length){ rowsEl.innerHTML = `<div class="empty">Enter coordinates below to convert.</div>`; return; }
-    rowsEl.innerHTML = points.map((pt, i) => {
-      const [a, b] = cellsFor(pt, key);
-      return `<div class="row"><span class="n">${i+1}</span><span class="c">${a}</span><span class="c">${b}</span><span class="nm">${escapeHtml(pt.name)}</span></div>`;
-    }).join("");
-  }
-  function escapeHtml(s){ return (s||"").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
-
   function renderAll(){
-    renderGrid($("#head1"), $("#rows1"), sys1.value);
-    renderGrid($("#head2"), $("#rows2"), sys2.value);
-    const has = points.length > 0;
-    $("#copy1").disabled = !has || SYSTEMS[sys1.value].kind==="disabled";
-    $("#copy2").disabled = !has || SYSTEMS[sys2.value].kind==="disabled";
-    const maps = $("#mapsbtn");
-    if(has){ maps.href = routeUrl(points); maps.classList.remove("disabled"); }
+    renderPanel("1"); renderPanel("2");
+    const has=points.length>0;
+    const maps=$("#maps");
+    if(has){ maps.href=routeUrl(points); maps.classList.remove("disabled"); }
     else { maps.removeAttribute("href"); maps.classList.add("disabled"); }
-    // input hint follows Grid 1
-    $("#inlabel").textContent = SYSTEMS[sys1.value].short || SYSTEMS[sys1.value].label;
-    $("#inhint").textContent = SYSTEMS[sys1.value].hint || "coord coord name";
   }
 
-  /* ================= copy ================= */
-  function copyGrid(key){
-    if(SYSTEMS[key].kind==="disabled" || !points.length) return;
-    const text = points.map(pt => {
-      const [a, b] = cellsFor(pt, key);
-      return pt.name ? `${a} ${b}  ${pt.name}` : `${a} ${b}`;
-    }).join("\n");
+  /* ---- commit (blur leaving a row) ---- */
+  function describe(el){
+    if(!el||!el.closest) return null;
+    const row=el.closest(".row"), panel=el.closest(".panel");
+    if(!row||!panel) return null;
+    const f=el.classList.contains("a")?"a":el.classList.contains("b")?"b":el.classList.contains("nm")?"nm":null;
+    return {p:panel.dataset.panel, i:+row.dataset.i, f};
+  }
+  function restoreFocus(d){
+    if(!d||!d.f) return;
+    const el=document.querySelector(`.panel[data-panel="${d.p}"] .row[data-i="${d.i}"] .cell.${d.f}`);
+    if(el){ el.focus(); const v=el.value; try{el.setSelectionRange(v.length,v.length);}catch(_){} }
+  }
+  function commitRow(p,row){
+    const i=+row.dataset.i;
+    const A=row.querySelector(".a"), B=row.querySelector(".b"), NM=row.querySelector(".nm");
+    const a=A.value.trim(), b=B.value.trim(), nm=NM.value;
+    A.classList.remove("bad"); B.classList.remove("bad");
+    if(a===""&&b===""){
+      if(i<points.length && nm!==(points[i].name||"")){ points[i].name=nm; return "ok"; } // name-only edit kept
+      return i<points.length ? "ok" : "empty";
+    }
+    const res=parseCells(sysKey(p),a,b);
+    if(res.error){ if(res.badA)A.classList.add("bad"); if(res.badB)B.classList.add("bad"); return "invalid"; }
+    const d = res.d!==undefined ? res.d : (points[i]?points[i].d:undefined);
+    const pt={ lat:res.lat, lon:res.lon, name:nm, d };
+    if(i<points.length) points[i]=pt; else points.push(pt);
+    return "ok";
+  }
+  function onFocusOut(p,e){
+    const row=e.target.closest(".row"); if(!row) return;
+    if(e.relatedTarget && row.contains(e.relatedTarget)) return; // moving within same row
+    const dest=describe(e.relatedTarget);
+    const res=commitRow(p,row);
+    if(res==="invalid") return;
+    renderAll();
+    restoreFocus(dest);
+  }
+  /* ---- pause preview: update opposite panel's mirror row (no commit, no re-render) ---- */
+  function pausePreview(p,row){
+    const i=+row.dataset.i;
+    const a=row.querySelector(".a").value.trim(), b=row.querySelector(".b").value.trim(), nm=row.querySelector(".nm").value;
+    if(a===""||b==="") return;
+    const res=parseCells(sysKey(p),a,b);
+    if(res.error) return;
+    const d = res.d!==undefined ? res.d : (points[i]?points[i].d:undefined);
+    const pt={lat:res.lat,lon:res.lon,name:nm,d};
+    const opp=p==="1"?"2":"1";
+    const mrow=document.querySelector(`.panel[data-panel="${opp}"] .row[data-i="${i}"]`);
+    if(!mrow) return;
+    const [ca,cb]=cellsFor(pt,oppKey(p));
+    const ma=mrow.querySelector(".a"), mb=mrow.querySelector(".b"), mnm=mrow.querySelector(".nm");
+    if(document.activeElement!==ma) ma.value=ca;
+    if(document.activeElement!==mb) mb.value=cb;
+    if(document.activeElement!==mnm) mnm.value=nm;
+    mrow.classList.remove("empty");
+  }
+
+  /* ---- wiring per panel body ---- */
+  ["1","2"].forEach(p=>{
+    const body=document.querySelector(`.panel-body[data-p="${p}"]`);
+    body.addEventListener("focusout", e=>onFocusOut(p,e));
+    let deb;
+    body.addEventListener("input", e=>{
+      const row=e.target.closest(".row"); if(!row) return;
+      clearTimeout(deb); deb=setTimeout(()=>pausePreview(p,row),1000);
+    });
+    body.addEventListener("click", e=>{
+      const del=e.target.closest(".del"); if(!del) return;
+      const row=del.closest(".row"); const i=+row.dataset.i;
+      if(i<points.length){ points.splice(i,1); renderAll(); }
+    });
+    body.addEventListener("pointerdown", e=>{ const h=e.target.closest(".handle"); if(h) startDrag(p,h,e); });
+  });
+  sys1.addEventListener("change", renderAll);
+  sys2.addEventListener("change", renderAll);
+
+  /* ---- drag reorder ---- */
+  let drag=null;
+  function startDrag(p,handle,e){
+    const row=handle.closest(".row"); const i=+row.dataset.i;
+    if(i>=points.length) return; // empty row
+    e.preventDefault();
+    drag={p,from:i,row,target:null,place:null};
+    row.classList.add("dragging"); handle.setPointerCapture(e.pointerId);
+    handle.addEventListener("pointermove",onDragMove); handle.addEventListener("pointerup",endDrag); handle.addEventListener("pointercancel",endDrag);
+  }
+  function onDragMove(e){
+    if(!drag) return;
+    const rowsEl=document.querySelector(`#rows${drag.p}`);
+    [...rowsEl.children].forEach(r=>{
+      if(r===drag.row) return;
+      const idx=+r.dataset.i; if(idx>=points.length) return;
+      const b=r.getBoundingClientRect(); r.classList.remove("drop-above","drop-below");
+      if(e.clientY>=b.top && e.clientY<=b.bottom){ const above=e.clientY<b.top+b.height/2; r.classList.add(above?"drop-above":"drop-below"); drag.target=idx; drag.place=above?"above":"below"; }
+    });
+  }
+  function endDrag(e){
+    if(!drag) return;
+    const rowsEl=document.querySelector(`#rows${drag.p}`);
+    [...rowsEl.children].forEach(r=>r.classList.remove("drop-above","drop-below","dragging"));
+    if(drag.target!=null){
+      let to=drag.target+(drag.place==="below"?1:0);
+      const item=points.splice(drag.from,1)[0];
+      if(drag.from<to) to--;
+      points.splice(to,0,item); renderAll();
+    }
+    drag=null;
+  }
+
+  /* ---- copy ---- */
+  function copyPanel(p){
+    const key=sysKey(p);
+    if(SYSTEMS[key].kind==="disabled"||!points.length) return;
+    const text=points.map(pt=>{ const [a,b]=cellsFor(pt,key); return pt.name?`${a}  ${b}  ${pt.name}`:`${a}  ${b}`; }).join("\n");
     writeClip(text, `Copied ${points.length} point${points.length>1?"s":""}`);
   }
-  async function writeClip(text, msg){
+  async function writeClip(text,msg){
     try{ await navigator.clipboard.writeText(text); }
     catch(_){ const t=document.createElement("textarea"); t.value=text; document.body.appendChild(t); t.select(); document.execCommand("copy"); t.remove(); }
     showToast(msg);
   }
   function showToast(msg){ const t=$("#toast"); t.textContent=msg; t.classList.add("show"); clearTimeout(showToast._t); showToast._t=setTimeout(()=>t.classList.remove("show"),1400); }
 
-  /* ================= wiring ================= */
-  let deb;
-  $("#input").addEventListener("input", e => {
-    e.target.style.height="auto"; e.target.style.height=Math.min(e.target.scrollHeight, window.innerHeight*0.22)+"px";
-    clearTimeout(deb); deb = setTimeout(parseInput, 120);
+  /* ---- bulk paste overlay ---- */
+  let pastePanel="1";
+  function openPaste(p){
+    if(SYSTEMS[sysKey(p)].kind==="disabled") return;
+    pastePanel=p;
+    $("#sheet-title").textContent=`Bulk paste — ${p==="1"?"Panel 1":"Panel 2"}`;
+    $("#sheet-desc").innerHTML=`Parsed as <b>${SYSTEMS[sysKey(p)].label}</b> · <code>${esc(SYSTEMS[sysKey(p)].hint)}</code> · appends to the list`;
+    $("#pastebox").value=""; $("#pasteerr").innerHTML="";
+    $("#overlay").classList.add("open"); $("#pastebox").focus();
+  }
+  function closePaste(){ $("#overlay").classList.remove("open"); }
+  function doPasteAdd(){
+    const key=sysKey(pastePanel), s=SYSTEMS[key];
+    const lines=$("#pastebox").value.split(/\r?\n/);
+    const errs=[]; const added=[];
+    lines.forEach((line,idx)=>{
+      if(!line.trim()) return;
+      const r = s.kind==="grid" ? parseSGLine(line) : parseWGSLine(line, s.order);
+      if(r.error) errs.push(`Line ${idx+1}: ${r.error}`);
+      else added.push({lat:r.lat,lon:r.lon,name:r.name||"",d:r.d});
+    });
+    const errEl=$("#pasteerr"); errEl.innerHTML="";
+    errs.forEach(e=>{ const d=document.createElement("div"); d.className="err"; d.textContent="⚠ "+e; errEl.appendChild(d); });
+    if(added.length){ points.push(...added); renderAll(); }
+    if(!errs.length){ closePaste(); if(added.length) showToast(`Added ${added.length}`); }
+  }
+  document.addEventListener("click", e=>{
+    const b=e.target.closest(".pbtn"); if(b){ const p=b.dataset.p; if(b.dataset.act==="copy") copyPanel(p); else openPaste(p); }
   });
-  sys1.addEventListener("change", parseInput); // re-interpret input in new Grid 1 system
-  sys2.addEventListener("change", renderAll);
-  $("#copy1").addEventListener("click", () => copyGrid(sys1.value));
-  $("#copy2").addEventListener("click", () => copyGrid(sys2.value));
-  $("#clearbtn").addEventListener("click", () => { $("#input").value=""; $("#input").style.height="auto"; parseInput(); });
+  $("#paste-cancel").addEventListener("click", closePaste);
+  $("#paste-add").addEventListener("click", doPasteAdd);
+  $("#overlay").addEventListener("click", e=>{ if(e.target.id==="overlay") closePaste(); });
 
-  if("serviceWorker" in navigator){ window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(()=>{})); }
-
+  if("serviceWorker" in navigator){ window.addEventListener("load", ()=>navigator.serviceWorker.register("sw.js").catch(()=>{})); }
   renderAll();
   </script>
 </body>
